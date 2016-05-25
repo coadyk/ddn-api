@@ -1,0 +1,21 @@
+>>> from ddn.sfa.api import *
+>>> APIConnect("https://14k01-1", auth=('user','user'))
+>>> pool = SFAStoragePool.get(Index=1)
+>>> disks = pool.getDiskDrives()
+>>> len(disks)
+10
+>>> for idx in range(len(disks)):
+...   print disks[idx].DiskHealthState.str()
+... 
+DISK_HEALTH_GOOD
+DISK_HEALTH_GOOD
+DISK_HEALTH_GOOD
+DISK_HEALTH_GOOD
+DISK_HEALTH_GOOD
+DISK_HEALTH_GOOD
+DISK_HEALTH_GOOD
+DISK_HEALTH_GOOD
+DISK_HEALTH_GOOD
+DISK_HEALTH_GOOD
+>>> APIDisconnect()
+
