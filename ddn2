@@ -46,12 +46,13 @@ if __name__ == '__main__':
    while True:
       try:
          enclosure = SFAEnclosure.get(Index=idx)
-         if enclosure.SerialNumber != None:
+         if enclosure.Type == 2:
             print(idx,'controller',enclosure.SerialNumber)
+         elif enclosure.Type == 1:
+            disks = enclosure.getDiskDrives()
       except:
          break
 
-      disks = enclosure.getDiskDrives()
       try:
          len(disks)
       except:
