@@ -31,6 +31,12 @@ def parse_options():
                         action='store',
                         help="DDN controller. Default: %(default)s")
 
+    parser.add_argument("-v", "--verbose",
+                        dest="verbose",
+                        default=False,
+                        action='store_true',
+                        help="Print run in verbose mode. Default: %(default)s")
+
     parser.add_argument("-D", "--debug",
                         dest="debug",
                         default=False,
@@ -60,7 +66,11 @@ if __name__ == '__main__':
             else:
                if len(disks) >= 0:
                   for dindx in range (len(disks)):
-                      print(idx, dindx, disks[dindx].DiskHealthState.str())
+                      if args.verbose:
+                         print(idx, dindx, disks[dindx].DiskHealthState.str())
+                      else:
+                         if disks[dindx].DiskHealthState != 0:
+                            print(idx, dindx, disks[dindx].DiskHealthState.str())
       except:
          break
 
