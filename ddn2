@@ -56,10 +56,11 @@ if __name__ == '__main__':
             try:
                len(disks)
             except:
-               pass
+               print(idx,'No disks')
             else:
                if len(disks) >= 0:
-                  print(idx,len(disks))
+                  for dindx in range (len(disks)):
+                      print(idx, dindx, disks[dindx].DiskHealthState.str())
       except:
          break
 
