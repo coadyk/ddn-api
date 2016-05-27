@@ -13,6 +13,24 @@ program_defaults = { 'controller': '14k01-1',
 def parse_options():
     import argparse
     parser = argparse.ArgumentParser()
+    parser.add_argument("-u", "--user",
+                        dest="username",
+                        default="user",
+                        action='store',
+                        help="Username for the account. Default: %(default)s")
+
+    parser.add_argument("-p", "--password",
+                        dest="password",
+                        default='user',
+                        action='store',
+                        help="Password for the account. Default: %(default)s")
+   
+    parser.add_argument("-c", "--controller",
+                        dest="controller",
+                        default='14k01-1',
+                        action='store',
+                        help="DDN controller. Default: %(default)s")
+
     parser.add_argument("-D", "--debug",
                         dest="debug",
                         default=False,
@@ -22,25 +40,10 @@ def parse_options():
     args = parser.parse_args()
     return args
 
-
-def setup_logging():
-    if args.debug:
-       loglvl = 'logging.DEBUG'
-    else:
-       loglvl = 'logging.INFO'
-    logging.basicConfig( level = eval(loglvl),
-       format = '%(asctime)s %(levelname)-8s %(message)s',
-       datefmt = '%Y%m%d %H%M%S',
-    )
-    logging.debug("Debug mode turned on.")
-
-
-
 if __name__ == '__main__':
    args = parse_options()
-   #setup_logging()
 
-   APIConnect("https://14k01-1", auth=('user','user'))
+   APIConnect("https://"+args.controller, auth=(args.username, args.password))
 
    idx = 0
    while True:
@@ -63,6 +66,4 @@ if __name__ == '__main__':
 
       idx = idx + 1
 
-
-
-
+   APIDisconnect()
