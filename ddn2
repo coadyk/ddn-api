@@ -35,7 +35,7 @@ def parse_options():
                         dest="verbose",
                         default=False,
                         action='store_true',
-                        help="Print run in verbose mode. Default: %(default)s")
+                        help="Run in verbose mode. Default: %(default)s")
 
     parser.add_argument("-D", "--debug",
                         dest="debug",
