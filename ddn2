@@ -15,19 +15,19 @@ def parse_options():
     parser = argparse.ArgumentParser()
     parser.add_argument("-u", "--user",
                         dest="username",
-                        default="user",
+                        default=program_defaults['user'],
                         action='store',
                         help="Username for the account. Default: %(default)s")
 
     parser.add_argument("-p", "--password",
                         dest="password",
-                        default='user',
+                        default=program_defaults['password'],
                         action='store',
                         help="Password for the account. Default: %(default)s")
    
     parser.add_argument("-c", "--controller",
                         dest="controller",
-                        default='14k01-1',
+                        default=program_defaults['controller'],
                         action='store',
                         help="DDN controller. Default: %(default)s")
 
