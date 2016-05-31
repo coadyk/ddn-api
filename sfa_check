@@ -1,0 +1,79 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+from ddn.sfa.api import *
+import logging
+
+
+program_defaults = { 'controller': '14k01-1',
+                     'user': 'user',
+                     'password': 'user',
+                   }
+
+def parse_options():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-u", "--user",
+                        dest="username",
+                        default=program_defaults['user'],
+                        action='store',
+                        help="Username for the account. Default: %(default)s")
+
+    parser.add_argument("-p", "--password",
+                        dest="password",
+                        default=program_defaults['password'],
+                        action='store',
+                        help="Password for the account. Default: %(default)s")
+   
+    parser.add_argument("-c", "--controller",
+                        dest="controller",
+                        default=program_defaults['controller'],
+                        action='store',
+                        help="DDN controller. Default: %(default)s")
+
+    parser.add_argument("-v", "--verbose",
+                        dest="verbose",
+                        default=False,
+                        action='store_true',
+                        help="Run in verbose mode. Default: %(default)s")
+
+    parser.add_argument("-D", "--debug",
+                        dest="debug",
+                        default=False,
+                        action='store_true',
+                        help="Print Debugging Information. Default: %(default)s")
+
+    args = parser.parse_args()
+    return args
+
+if __name__ == '__main__':
+   args = parse_options()
+
+   APIConnect("https://"+args.controller, auth=(args.username, args.password))
+
+   idx = 0
+   while True:
+      try:
+         enclosure = SFAEnclosure.get(Index=idx)
+         if enclosure.Type == 2:
+            print(idx,'controller',enclosure.SerialNumber)
+         elif enclosure.Type == 1:
+            disks = enclosure.getDiskDrives()
+            try:
+               len(disks)
+            except:
+               print(idx,'No disks')
+            else:
+               if len(disks) >= 0:
+                  for dindx in range (len(disks)):
+                      if args.verbose:
+                         print(idx, dindx, disks[dindx].DiskHealthState.str())
+                      else:
+                         if disks[dindx].DiskHealthState != 0:
+                            print(idx, dindx, disks[dindx].DiskHealthState.str())
+      except:
+         break
+
+      idx = idx + 1
+
+   APIDisconnect()
