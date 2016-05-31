@@ -36,6 +36,12 @@ def parse_options():
                         default=False,
                         action='store_true',
                         help="Check disk status. Default: %(default)s")
+  
+    parser.add_argument("--power",
+                        dest="power",
+                        default=False,
+                        action='store_true',
+                        help="Check enclosure power supplies. Default: %(default)s")
 
     parser.add_argument("--all",
                         dest="all",
@@ -86,6 +92,30 @@ def check_disks():
 
         idx = idx + 1
 
+def check_power_supplies():
+    idx = 0
+    while True:
+        try:
+            enclosure = SFAEnclosure.get(Index=idx)
+            ps = enclosure.getPowerSupplies()
+            try:
+                len(ps)
+            except:
+                if args.verbose:
+                    print(idx,'No power supplies')
+            else:
+                if len(ps) >= 0:
+                    for dindx in range (len(ps)):
+                        if args.verbose:
+                            print(idx, dindx, ps[dindx].HealthState.str())
+                        else:
+                             if ps[dindx].HealthState != 1:
+                                print(idx, dindx, ps[dindx].HealthState.str())
+        except:
+            break
+
+        idx = idx + 1
+
 
 if __name__ == '__main__':
    args = parse_options()
@@ -94,5 +124,8 @@ if __name__ == '__main__':
 
    if args.disks or args.all:
       check_disks()
+
+   if args.power or args.all:
+      check_power_supplies()
 
    APIDisconnect()
