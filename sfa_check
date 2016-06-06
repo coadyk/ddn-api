@@ -8,6 +8,8 @@ import logging
 program_defaults = { 'controller': '14k01-1',
                      'user': 'user',
                      'password': 'user',
+                     'temp_warn': 80,
+                     'temp_crit': 95,  
                    }
 
 def parse_options():
@@ -42,6 +44,26 @@ def parse_options():
                         default=False,
                         action='store_true',
                         help="Check enclosure power supplies. Default: %(default)s")
+ 
+    parser.add_argument("--temp",
+                        dest="temp",
+                        default=False,
+                        action='store_true',
+                        help="Check enclosure temperature. Default: %(default)s")
+
+    parser.add_argument("-W", "--warn", "--warning",
+                        dest="temp_warn",
+                        type=int,
+                        default=program_defaults['temp_warn'],
+                        action='store',
+                        help="Temperature warning threshold. Default: %(default)s Celcius")
+
+    parser.add_argument("-C", "--crit", "--critical",
+                        dest="temp_crit",
+                        type=int,
+                        default=program_defaults['temp_crit'],
+                        action='store',
+                        help="Temperature critical threshold. Default: %(default)s Celcius")
 
     parser.add_argument("--all",
                         dest="all",
@@ -102,15 +124,15 @@ def check_power_supplies():
                 len(ps)
             except:
                 if args.verbose:
-                    print(idx,'No power supplies')
+                   print(idx,'No power supplies')
             else:
                 if len(ps) >= 0:
-                    for dindx in range (len(ps)):
-                        if args.verbose:
-                            print(idx, dindx, ps[dindx].HealthState.str())
-                        else:
-                             if ps[dindx].HealthState != 1:
-                                print(idx, dindx, ps[dindx].HealthState.str())
+                   for dindx in range (len(ps)):
+                       if args.verbose:
+                          print(idx, dindx, ps[dindx].HealthState.str())
+                       else:
+                          if ps[dindx].HealthState != 1:
+                             print(idx, dindx, ps[dindx].HealthState.str())
         except:
             break
 
