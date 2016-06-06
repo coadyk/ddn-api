@@ -138,6 +138,37 @@ def check_power_supplies():
 
         idx = idx + 1
 
+def check_temperature():
+    idx = 0
+    while True:
+        try:
+            enclosure = SFAEnclosure.get(Index=idx)
+            t = enclosure.getTemperatureSensors()
+            try:
+                len(t)
+            except:
+                if args.verbose:
+                   print(idx,'No temperature sensors.')
+            else:
+                if len(t) >= 0:
+                   for dindx in range (len(t)):
+                       if args.verbose:
+                          print(idx, dindx, t[dindx].CurrentReading)
+                       else:
+                          if t[dindx].TemperatureWarning:
+                             print(idx, dindx, 'Warning.  Temp:', t[dindx].CurrentReading)
+                          elif t[dindx].TemperatureFailure:
+                             print(idx, dindx, 'Critical.  Temp:', t[dindx].CurrentReading)
+                          elif t[dindx].HealthState != 1:
+                             print(idx, dindx, 'Sensor Failure.  RC:', t[dindx].HealthState.str())
+                          elif t[dindx].PredictFailure:
+                             print(idx, dindx, 'Predicted sensor failure.')
+
+        except:
+            break
+
+        idx = idx + 1
+
 
 if __name__ == '__main__':
    args = parse_options()
@@ -149,5 +180,8 @@ if __name__ == '__main__':
 
    if args.power or args.all:
       check_power_supplies()
-
+   
+   if args.temp or args.all:
+      check_temperature()
+   
    APIDisconnect()
