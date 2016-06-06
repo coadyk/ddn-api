@@ -11,9 +11,7 @@ import logging
 
 program_defaults = { 'controller': '14k01-1',
                      'user': 'user',
-                     'password': 'user',
-                     'temp_warn': 80,
-                     'temp_crit': 95,  
+                     'password': 'user',  
                    }
 
 def parse_options():
@@ -54,20 +52,6 @@ def parse_options():
                         default=False,
                         action='store_true',
                         help="Check enclosure temperature. Default: %(default)s")
-
-    parser.add_argument("-W", "--warn", "--warning",
-                        dest="temp_warn",
-                        type=int,
-                        default=program_defaults['temp_warn'],
-                        action='store',
-                        help="Temperature warning threshold. Default: %(default)s Celcius")
-
-    parser.add_argument("-C", "--crit", "--critical",
-                        dest="temp_crit",
-                        type=int,
-                        default=program_defaults['temp_crit'],
-                        action='store',
-                        help="Temperature critical threshold. Default: %(default)s Celcius")
 
     parser.add_argument("--all",
                         dest="all",
