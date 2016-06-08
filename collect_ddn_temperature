@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""This program is used to monitor DDN Temperatures.
+"""This program is used to collect DDN Temperatures.
 Author: Coady I Kerner
 Email: coady.kerner@gmail.com
 """
