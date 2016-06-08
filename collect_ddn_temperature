@@ -7,7 +7,7 @@ Email: coady.kerner@gmail.com
 from __future__ import print_function
 from ddn.sfa.api import *
 import sqlite3
-
+import time
 
 program_defaults = { 'controller': '14k01-1',
                      'user': 'user',
@@ -58,6 +58,21 @@ def parse_options():
     return args
 
 def db_connect():
+    """Connects to the database.
+
+    Args:
+	None
+
+    Returns:
+	db - Sqlite database object.
+        sql - Sqlite database object.
+
+    Raises:
+	Nothing
+
+    """
+    epoch_time = int(time.time())
+
     if args.debug:
        print('Connecting to database.')
     try:
@@ -71,6 +86,20 @@ def db_connect():
     return (db, sql)
 
 def create_temperatures_table(sql):
+    """Creates temperature table.
+
+    Args:
+	sql - Sqlite database object.
+
+    Returns:
+	Nothing
+
+    Raises:
+	Nothing
+
+    """
+    epoch_time = int(time.time())
+
     try:
        sql.execute('''
           create table if not exists
@@ -86,18 +115,10 @@ def create_temperatures_table(sql):
           print('Error: ',e.args[0])
 
 def db_disconnect(db):
-    if args.debug:
-       print('Committing the SQL')
-    db.commit()
-    if args.debug:
-       print('Closing the database.')
-    db.close()
-
-def check_temperature():
-    """Checks temperature health status.
+    """Disconnects from the database.
 
     Args:
-        None
+	db - Sqlite database object.
 
     Returns:
 	Nothing
@@ -106,6 +127,29 @@ def check_temperature():
 	Nothing
 
     """
+    epoch_time = int(time.time())
+
+    if args.debug:
+       print('Committing the SQL')
+    db.commit()
+    if args.debug:
+       print('Closing the database.')
+    db.close()
+
+def check_temperature(sql):
+    """Checks temperature health status.
+
+    Args:
+        sql - Sqlite database object.
+
+    Returns:
+	Nothing
+
+    Raises:
+	Nothing
+
+    """
+    epoch_time = int(time.time())
     idx = 0
     while True:
         try:
@@ -119,18 +163,10 @@ def check_temperature():
             else:
                 if len(t) >= 0:
                    for dindx in range (len(t)):
-                       if args.verbose:
-                          print(idx, dindx, t[dindx].CurrentReading)
-                       else:
-                          if t[dindx].TemperatureWarning:
-                             print(idx, dindx, 'Warning.  Temp:', t[dindx].CurrentReading)
-                          elif t[dindx].TemperatureFailure:
-                             print(idx, dindx, 'Critical.  Temp:', t[dindx].CurrentReading)
-                          elif t[dindx].HealthState != 1:
-                             print(idx, dindx, 'Sensor Failure.  RC:', t[dindx].HealthState.str())
-                          elif t[dindx].PredictFailure:
-                             print(idx, dindx, 'Predicted sensor failure.')
-
+                      try:
+                         sql.execute("insert into temperatures (ts, controller, enclosure, sensor, temperature) values (?,?,?,?,?);", (epoch_time, args.controller, idx, dindx, t[dindx].CurrentReading))
+                      except db.Error, e:
+                         print('Error :', e.args[0])
         except:
             break
 
@@ -144,7 +180,9 @@ if __name__ == '__main__':
    create_temperatures_table(sql)
 
    APIConnect("https://"+args.controller, auth=(args.username, args.password))
-   
+
+   check_temperature(sql)   
+
    APIDisconnect()
 
    db_disconnect(db)
