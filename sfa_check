@@ -53,6 +53,12 @@ def parse_options():
                         action='store_true',
                         help="Check enclosure temperature. Default: %(default)s")
 
+    parser.add_argument("--logs",
+                        dest="logs",
+                        default=False,
+                        action='store_true',
+                        help="Retrieves controller logs. Default: %(default)s")
+
     parser.add_argument("--all",
                         dest="all",
                         default=False,
@@ -193,6 +199,24 @@ def check_temperature():
 
         idx = idx + 1
 
+def get_controller_logs():
+    """Retrieves logs from the controller.
+    Args:
+        None
+    Returns:
+	Nothing
+    Raises:
+	Nothing
+    """
+    try:
+        controller = SFAController.get(Index=0)
+        msgs = controller.GetLogMessages(Number=-1,StartSequenceID=-1,Descending=False,Remote=False)  
+        for msg in msgs[1]['LogMessages']:
+            print(msg)
+    except:
+        print('Error fetching logs')
+
+
 if __name__ == '__main__':
    args = parse_options()
 
@@ -206,5 +230,8 @@ if __name__ == '__main__':
    
    if args.temp or args.all:
       check_temperature()
+
+   if args.logs or args.all:
+      get_controller_logs()
    
    APIDisconnect()
